@@ -1,0 +1,81 @@
+{
+  "name": "first-intl",
+  "version": "1.0.0",
+  "description": "First intl setup",
+  "main": "src/intl.js",
+  "scripts": {
+    "test": "jest --colors",
+    "flow": "flow --quiet",
+    "eslint": "eslint --cache --cache-location 'build/.eslintcache' src/",
+    "prettier": "prettier --config .prettierrc --write '*/src/**/*.js'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fdc-viktor-luft/first-intl.git"
+  },
+  "keywords": [
+    "intl",
+    "internationalization",
+    "translation",
+    "languages",
+    "setup"
+  ],
+  "author": "Viktor Luft",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fdc-viktor-luft/first-intl/issues"
+  },
+  "homepage": "https://github.com/fdc-viktor-luft/first-intl#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-eslint": "^8.2.3",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-flow": "^6.23.0",
+    "babel-preset-react": "^6.24.1",
+    "enzyme": "^3.3.0",
+    "enzyme-adapter-react-16": "^1.1.1",
+    "enzyme-to-json": "^3.3.4",
+    "eslint": "^4.19.1",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-flowtype": "^2.47.1",
+    "eslint-plugin-prettier": "^2.6.0",
+    "eslint-plugin-react": "^7.8.2",
+    "flow-bin": "^0.73.0",
+    "jest": "^23.0.0",
+    "prettier": "^1.12.1",
+    "spy4js": "^1.3.3"
+  },
+  "dependencies": {
+    "react": "^16.4.0",
+    "react-dom": "^16.4.0"
+  },
+  "jest": {
+    "setupTestFrameworkScriptFile": "<rootDir>/setupTests.js",
+    "testURL": "https://localhost",
+    "collectCoverageFrom": [
+      "src/**/*.{js}"
+    ],
+    "testMatch": [
+      "<rootDir>/src/**/?(*.)test.js"
+    ],
+    "coverageDirectory": "<rootDir>/build/coverage",
+    "coverageReporters": [
+      "lcov"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 100,
+        "branches": 100,
+        "functions": 100,
+        "lines": 100
+      }
+    }
+  },
+  "babel": {
+    "presets": [
+      "env",
+      "flow",
+      "react"
+    ]
+  }
+}

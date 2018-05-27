@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`App renders the App without translations, but all necessary information 1`] = `
+<div>
+  <header>
+    <img
+      alt="__({ id: 'header.logo.alt' })"
+      src="/path/to/img"
+    />
+  </header>
+  <main>
+    <button>
+      __({ id: 'account.remove' })
+    </button>
+    <p>
+      __({ id: 'account.remove.info', values: {"email":"my.example@mail.com"} })
+    </p>
+  </main>
+  <footer>
+    <a
+      href="/path/to/home"
+    >
+      __({ id: 'footer.navigation.home' })
+    </a>
+  </footer>
+</div>
+`;

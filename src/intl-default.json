@@ -1,0 +1,11 @@
+{
+  "header.logo.alt": "Welcome Logo",
+  "footer.navigation.home": "Home",
+  "footer.navigation.settings": "Settings",
+  "footer.navigation.info": "Information",
+  "footer.navigation.shop": "Shopping",
+  "account.back": "Revoke submission",
+  "account.remove": "Delete account",
+  "account.remove.info": "After deleting your account for {email}, you will be consequently distrusted.",
+  "account.submit": "Register now!"
+}
