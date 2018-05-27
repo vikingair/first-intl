@@ -34,6 +34,72 @@ get:
 The basic concept is the following: You wrap your translations inside
 another function, which handles everything else for you. That simple!
 
+How does it look in your production code? You got somewhere your translations
+inside a [json file][https://github.com/fdc-viktor-luft/first-intl/blob/master/src/intl-default.json]
+like so:
+```json
+{
+  "header.logo.alt": "Welcome Logo",
+  "footer.navigation.home": "Home",
+  "footer.navigation.settings": "Settings",
+  "footer.navigation.info": "Information",
+  "footer.navigation.shop": "Shopping",
+  "account.back": "Revoke submission",
+  "account.remove": "Delete account",
+  "account.remove.info": "After deleting your account for {email}, you will be consequently distrusted.",
+  "account.submit": "Register now!"
+}
+```
+On the other hand you code your [App][https://github.com/fdc-viktor-luft/first-intl/blob/master/src/examples/App.js]
+```js
+export class App extends React.Component<{}> {
+    render() {
+        return (
+            <div>
+                <header>{__({ id: 'header.logo.alt' }, alt => <img src="/path/to/img" alt={alt} />)}</header>
+                <main>
+                    <button>{__({ id: 'account.remove' })}</button>
+                    {__({ id: 'account.remove.info', values: { email: 'my.example@mail.com' } }, info => <p>{info}</p>)}
+                </main>
+                <footer>
+                    <a href="/path/to/home">{__({ id: 'footer.navigation.home' })}</a>
+                </footer>
+            </div>
+        );
+    }
+}
+```
+Your [snapshot][https://github.com/fdc-viktor-luft/first-intl/blob/master/src/examples/__snapshots__/App.test.js.snap]
+of this app will look like:
+```
+<div>
+  <header>
+    <img
+      alt="__({ id: 'header.logo.alt' })"
+      src="/path/to/img"
+    />
+  </header>
+  <main>
+    <button>
+      __({ id: 'account.remove' })
+    </button>
+    <p>
+      __({ id: 'account.remove.info', values: {"email":"my.example@mail.com"} })
+    </p>
+  </main>
+  <footer>
+    <a
+      href="/path/to/home"
+    >
+      __({ id: 'footer.navigation.home' })
+    </a>
+  </footer>
+</div>
+```
+
+## Setup
+Copy the [intl.js][https://github.com/fdc-viktor-luft/first-intl/blob/master/src/intl.js]
+(if you like together with its test) into your src. Modify it to your custom needs.
 
 WIP: Further instructions will follow...
 
