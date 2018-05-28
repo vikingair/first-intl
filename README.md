@@ -35,7 +35,7 @@ The basic concept is the following: You wrap your translations inside
 another function, which handles everything else for you. That simple!
 
 How does it look in your production code? You got somewhere your translations
-inside a [json file][https://github.com/fdc-viktor-luft/first-intl/blob/master/src/intl-default.json]
+inside a [json file](https://github.com/fdc-viktor-luft/first-intl/blob/master/src/intl-default.json)
 like so:
 ```json
 {
@@ -50,7 +50,7 @@ like so:
   "account.submit": "Register now!"
 }
 ```
-On the other hand you code your [App][https://github.com/fdc-viktor-luft/first-intl/blob/master/src/examples/App.js]
+On the other hand you code your [App](https://github.com/fdc-viktor-luft/first-intl/blob/master/src/examples/App.js)
 ```js
 export class App extends React.Component<{}> {
     render() {
@@ -69,7 +69,7 @@ export class App extends React.Component<{}> {
     }
 }
 ```
-Your [snapshot][https://github.com/fdc-viktor-luft/first-intl/blob/master/src/examples/__snapshots__/App.test.js.snap]
+Your [snapshot](https://github.com/fdc-viktor-luft/first-intl/blob/master/src/examples/__snapshots__/App.test.js.snap)
 of this app will look like:
 ```
 <div>
@@ -98,10 +98,99 @@ of this app will look like:
 ```
 
 ## Setup
-Copy the [intl.js][https://github.com/fdc-viktor-luft/first-intl/blob/master/src/intl.js]
+Copy the [intl.js](https://github.com/fdc-viktor-luft/first-intl/blob/master/src/intl.js)
 (if you like together with its test) into your src. Modify it to your custom needs.
 
-WIP: Further instructions will follow...
+#### Flow
+Extend or create your custom [flow lib](https://github.com/fdc-viktor-luft/first-intl/blob/master/flow-typed/custom-types.js)
+js-File with the following declarations.
+```js
+declare type Message = { id: string, values?: { [string]: string } }; // eslint-disable-line
+declare function __(msg: Message, renderFunc?: (string) => React$Node): React$Node; // eslint-disable-line
+```
+Do not forget to point within your [.flowconfig](https://github.com/fdc-viktor-luft/first-intl/blob/master/.flowconfig)
+at section `[libs]` to this js-File.
+
+#### Eslint
+Add the required globals to your eslint config.
+```json
+"globals": {
+    "__": true,
+    "Message": true
+}
+```
+
+#### Jest
+Overwrite the behaviour of the intl function for all tests, inside
+your [setupTests.js](https://github.com/fdc-viktor-luft/first-intl/blob/master/setupTests.js)
+```js
+// make your tests fail immediately on encountered errors
+_Intl.trackOrLog = (str: string) => {
+    throw new Error(str);
+};
+// make all validations and render an informative string that does not contain translations
+window.__ = (msg: Message, renderFunc?: string => React$Node = s => s): React$Node => {
+    // make all the validations
+    _Intl.func(msg, renderFunc);
+    // return rendered message without translated content (for stable test snapshots)
+    return renderFunc(`__({ id: '${msg.id}'${msg.values ? ', values: ' + JSON.stringify(msg.values) : ''} })`);
+};
+```
+
+#### Without React
+Just modify return types of the intl func and provide another default
+renderer.
+
+## Rules
+It is **very important** to differentiate between the message business value
+and its translation. To enforce this, the intl func returns a
+`React$Node` instead of a simple `string`. Also I defined the type
+`Message` for the busines value. The business value should be used as
+long as possible. It holds all relevant information to call the intl
+func and render the translation. The translation should be done only
+if you want to display it. There is no need to make any of your translations
+inside a validator or store them inside your redux store or whatever else.
+
+This is the key aspect, why it will be no pain to migrate any other
+full internationalization framework, e.g.
+[react-intl](https://github.com/yahoo/react-intl) or
+[i18next](https://www.i18next.com) especially for react
+[react-i18next](https://github.com/i18next/react-i18next).
+
+## Migrate to full intl
+You should migrate to a full internationalization framework as soon as
+you have to compute translations for more than one language.
+To migrate you only need to modify the intl func in the following way.
+Before:
+```js
+const intlFunc = (msg: Message, renderFunc?: string => React$Node = defaultRenderFunc): React$Node => {
+    (...)
+    return renderFunc(result);
+```
+After (`react-intl`):
+```js
+import { FormattedMessage } from 'react-intl';
+
+const intlFunc = (msg: Message, renderFunc?: string => React$Node = defaultRenderFunc): React$Node => {
+    (...) // all validations will still be made, but FormattedMessage takes care to translate and update
+    return <FormattedMessage {...msg}>{renderFunc}</FormattedMessage>;
+```
+After (`react-i18next`):
+```js
+import { Trans } from 'react-i18next';
+
+const intlFunc = (msg: Message, renderFunc: void => React$Node): React$Node => {
+    (...) // all validations will still be made, but FormattedMessage takes care to translate and update
+    return <Trans i18nKey={msg.id}>{renderFunc()}</Trans>;
+```
+For `react-i18next` there are mulitple other solutions. You might want to use `I18n`-Tag instead.
+For more information see into their [documentaion](https://react.i18next.com).
+
+## Future
+- I will possibly provide a method to wrap multiple translations into a single render func.
+- If I find a more convinient and general solution with the possibility for good configuration **and**
+  very small bundle size, I might add an extra npm package.
+- I might add more complete documentation for migrating to different intl frameworks.
 
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg
 [license-url]: https://github.com/fdc-viktor-luft/first-intl/blob/master/LICENSE
