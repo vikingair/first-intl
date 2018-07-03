@@ -15,6 +15,7 @@ exports[`App renders the App without translations, but all necessary information
     <p>
       __({ id: 'account.remove.info', values: {"email":"my.example@mail.com"} })
     </p>
+    __({ id: 'account.tac.text', values: {"tac":{"type":"a","key":null,"ref":null,"props":{"href":"/path/to/tac","children":"__({ id: 'account.tac' })"},"_owner":null,"_store":{}},"info":"__({ id: 'account.tac.info' })","br":{"type":"br","key":null,"ref":null,"props":{},"_owner":null,"_store":{}}} })
   </main>
   <footer>
     <a

@@ -101,25 +101,6 @@ of this app will look like:
 Copy the [intl.js](https://github.com/fdc-viktor-luft/first-intl/blob/master/src/intl.js)
 (if you like together with its test) into your src. Modify it to your custom needs.
 
-#### Flow
-Extend or create your custom [flow lib](https://github.com/fdc-viktor-luft/first-intl/blob/master/flow-typed/custom-types.js)
-js-File with the following declarations.
-```js
-declare type Message = { id: string, values?: { [string]: string } }; // eslint-disable-line
-declare function __(msg: Message, renderFunc?: (string) => React$Node): React$Node; // eslint-disable-line
-```
-Do not forget to point within your [.flowconfig](https://github.com/fdc-viktor-luft/first-intl/blob/master/.flowconfig)
-at section `[libs]` to this js-File.
-
-#### Eslint
-Add the required globals to your eslint config.
-```json
-"globals": {
-    "__": true,
-    "Message": true
-}
-```
-
 #### Jest
 Overwrite the behaviour of the intl function for all tests, inside
 your [setupTests.js](https://github.com/fdc-viktor-luft/first-intl/blob/master/setupTests.js)
@@ -129,9 +110,9 @@ _Intl.trackOrLog = (str: string) => {
     throw new Error(str);
 };
 // make all validations and render an informative string that does not contain translations
-window.__ = (msg: Message, renderFunc?: string => React$Node = s => s): React$Node => {
+_Intl.func = (msg: Message, renderFunc?: React$Node => React$Node = s => s): React$Node => {
     // make all the validations
-    _Intl.func(msg, renderFunc);
+    _Intl.internal(msg, renderFunc);
     // return rendered message without translated content (for stable test snapshots)
     return renderFunc(`__({ id: '${msg.id}'${msg.values ? ', values: ' + JSON.stringify(msg.values) : ''} })`);
 };
@@ -163,7 +144,7 @@ you have to compute translations for more than one language.
 To migrate you only need to modify the intl func in the following way.
 Before:
 ```js
-const intlFunc = (msg: Message, renderFunc?: string => React$Node = defaultRenderFunc): React$Node => {
+const internal = (msg: Message, renderFunc?: React$Node => React$Node = defaultRenderFunc): React$Node => {
     (...)
     return renderFunc(result);
 ```
@@ -171,7 +152,7 @@ After (`react-intl`):
 ```js
 import { FormattedMessage } from 'react-intl';
 
-const intlFunc = (msg: Message, renderFunc?: string => React$Node = defaultRenderFunc): React$Node => {
+const internal = (msg: Message, renderFunc?: React$Node => React$Node = defaultRenderFunc): React$Node => {
     (...) // all validations will still be made, but FormattedMessage takes care to translate and update
     return <FormattedMessage {...msg}>{renderFunc}</FormattedMessage>;
 ```
@@ -179,7 +160,7 @@ After (`react-i18next`):
 ```js
 import { Trans } from 'react-i18next';
 
-const intlFunc = (msg: Message, renderFunc: void => React$Node): React$Node => {
+const internal = (msg: Message, renderFunc: void => React$Node): React$Node => {
     (...) // all validations will still be made, but FormattedMessage takes care to translate and update
     return <Trans i18nKey={msg.id}>{renderFunc()}</Trans>;
 ```
@@ -191,6 +172,7 @@ For more information see into their [documentaion](https://react.i18next.com).
 - If I find a more convinient and general solution with the possibility for good configuration **and**
   very small bundle size, I might add an extra npm package.
 - I might add more complete documentation for migrating to different intl frameworks.
+- Better serialization for tests will be added
 
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg
 [license-url]: https://github.com/fdc-viktor-luft/first-intl/blob/master/LICENSE

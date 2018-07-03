@@ -27,9 +27,5 @@
       "parser": "flow"}],
     "no-unused-vars": 2,
     "flowtype/require-valid-file-annotation": [2, "always"]
-  },
-  "globals": {
-    "__": true,
-    "Message": true
   }
 }

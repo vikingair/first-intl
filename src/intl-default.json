@@ -7,5 +7,8 @@
   "account.back": "Revoke submission",
   "account.remove": "Delete account",
   "account.remove.info": "After deleting your account for {email}, you will be consequently distrusted.",
-  "account.submit": "Register now!"
+  "account.submit": "Register now!",
+  "account.tac": "Terms and Conditions",
+  "account.tac.info": "here",
+  "account.tac.text": "Regsiter for our {tac}.{br}, for more information see {info}.{br}Got more questions?"
 }
