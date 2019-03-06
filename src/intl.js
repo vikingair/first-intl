@@ -1,59 +1,101 @@
 // @flow
 
 import React, { Fragment } from 'react';
-import intlData from './intl-default.json';
 
-export type Message = { id: string, values?: { [string]: mixed } };
+export type TypedMessage<T> = { id: string, values?: { [string]: T } };
+export type StringMessage = TypedMessage<string | number>;
+export type Message = TypedMessage<React$Node>;
+type Contents = string | React$Node[];
+type Renderer<T> = (contents: Contents) => T;
+type ReactRenderer = Renderer<React$Node>;
 
-const trackOrLog = (str: string) => window.console.error(str);
+const defaultRenderer: ReactRenderer = contents =>
+    typeof contents === 'string' ? (
+        contents
+    ) : (
+        <Fragment>
+            {contents.map((v, k) => (
+                <Fragment key={k}>{v}</Fragment>
+            ))}
+        </Fragment>
+    );
 
-const defaultRenderFunc = node => <Fragment>{node}</Fragment>;
+const stringRenderer: Renderer<string> = contents =>
+    typeof contents === 'string' ? contents : contents.map(String).join('');
 
-const internal = (msg: Message, renderFunc?: React$Node => React$Node = defaultRenderFunc): React$Node => {
-    const raw = intlData[msg.id];
-    if (!raw) {
-        _Intl.trackOrLog('No translation for key: ' + msg.id);
-        return renderFunc(msg.id);
-    }
-    const keys = Object.keys(msg.values || {});
-    const matches = numberOfMatches(raw);
-    if (keys.length > matches) {
-        _Intl.trackOrLog('Redundant placeholders for: ' + msg.id);
-    }
-    return matches ? renderFunc(processString(raw, msg)) : renderFunc(raw);
+type IntlData = { [string]: string };
+type Tracker = (description: string) => void;
+type Config = {| tracker: Tracker, intlData: IntlData, renderer: ReactRenderer |};
+const CONFIG: Config = {
+    tracker: s => window.console.error(s),
+    intlData: ({}: Object),
+    renderer: defaultRenderer,
 };
 
-const numberOfMatches = (raw: string): number => {
-    const result = [];
-    (raw.match(/{[^}]*}/g) || []).forEach(v => {
-        if (result.indexOf(v) === -1) result.push(v);
+export const addIntlData = (data: { [string]: string }) => {
+    CONFIG.intlData = { ...CONFIG.intlData, ...data };
+};
+
+export const configure = (config: $Shape<Config>): void =>
+    Object.keys(config).forEach((key: string) => {
+        CONFIG[key] = config[key];
     });
-    return result.length;
-};
 
-const processString = (raw: string, msg: Message): React$Node => {
-    const values = msg.values || {};
-    const rawStrings = raw.split(/{[a-zA-Z]+}/);
-    let index = 0;
-    let reactKey = 0;
-    let result = [];
-    for (let i = 0; i < rawStrings.length; i++) {
-        const rawPart = rawStrings[i];
-        result.push(rawPart);
-        if (i === rawStrings.length - 1) continue;
-        const remainder = raw.substring(index + rawPart.length);
-        const indexOfClosingBrace = remainder.indexOf('}');
-        const key = remainder.substring(1, indexOfClosingBrace);
-        const value = values[key];
-        if (value !== undefined) {
-            result.push(<Fragment key={reactKey++}>{value}</Fragment>);
-        } else {
-            result.push(`{${key}}`);
-            _Intl.trackOrLog(`Missing placeholder "${key}" for: ${msg.id}`);
-        }
-        index = index + rawPart.length + indexOfClosingBrace + 1;
+const destructure = (raw: string, msg: Message): Contents => {
+    const { id, values } = msg;
+
+    const matches = raw.match(/{[a-z]+}/gi);
+    if (!matches) {
+        if (values) CONFIG.tracker('Ignoring specified values for: ' + id);
+        return raw;
     }
+
+    let toProcess = raw;
+    const result = [];
+    const used = [];
+    const phValues = values || {};
+    matches.forEach(ph => {
+        const phIndex = toProcess.indexOf(ph);
+        const key = ph.slice(1, -1);
+        const value = phValues[key];
+        used.indexOf(key) === -1 && used.push(key);
+
+        result.push(toProcess.substr(0, phIndex));
+        if (value !== undefined) {
+            result.push(value);
+        } else {
+            result.push(ph);
+            CONFIG.tracker(`Missing placeholder "${key}" for: ${id}`);
+        }
+        toProcess = toProcess.substr(phIndex + ph.length);
+    });
+    toProcess && result.push(toProcess);
+
+    if (used.length < Object.keys(phValues).length) {
+        CONFIG.tracker('Redundant placeholders for: ' + id);
+    }
+
+    if (result.every(v => typeof v === 'number' || typeof v === 'string')) {
+        return result.join('');
+    }
+
     return result;
 };
-export const _Intl = { func: internal, internal, trackOrLog, _trackOrLog: trackOrLog };
-export const __ = (msg: Message, renderFunc?: React$Node => React$Node): React$Node => _Intl.func(msg, renderFunc);
+
+const render = <T>(msg: Message | string, renderer: Renderer<T>): T => {
+    const m = typeof msg === 'string' ? { id: msg } : msg;
+    const raw = CONFIG.intlData[m.id];
+    if (!raw) {
+        CONFIG.tracker('No translation for key: ' + m.id);
+        return renderer(m.id);
+    }
+    return renderer(destructure(raw, m));
+};
+
+export const __internal = { render };
+
+export const __ = (msg: Message | string, renderer?: ReactRenderer = CONFIG.renderer): React$Node =>
+    __internal.render<React$Node>(msg, renderer);
+
+export const __string = (msg: StringMessage | string, renderer?: Renderer<string> = stringRenderer): string =>
+    __internal.render<string>(msg, renderer);

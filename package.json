@@ -1,83 +1,68 @@
 {
   "name": "first-intl",
-  "version": "1.0.0",
-  "description": "First intl setup",
-  "main": "src/intl.js",
-  "scripts": {
-    "test": "jest --colors",
-    "flow": "flow --quiet",
-    "eslint": "eslint --cache --cache-location 'build/.eslintcache' src/",
-    "prettier": "prettier --config .prettierrc --write '*/src/**/*.js'"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/fdc-viktor-luft/first-intl.git"
-  },
+  "version": "0.1.0",
+  "description": "First intl setup for react",
   "keywords": [
     "intl",
     "internationalization",
     "translation",
     "languages",
-    "setup"
+    "setup",
+    "react"
   ],
-  "author": "Viktor Luft",
   "license": "MIT",
+  "author": "Viktor Luft <viktor.luft@freiheit.com> (https://github.com/fdc-viktor-luft)",
+  "homepage": "https://github.com/fdc-viktor-luft/first-intl#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fdc-viktor-luft/first-intl"
+  },
   "bugs": {
     "url": "https://github.com/fdc-viktor-luft/first-intl/issues"
   },
-  "homepage": "https://github.com/fdc-viktor-luft/first-intl#readme",
+  "main": "dist/cjs/intl.js",
+  "module": "dist/esm/intl.js",
+  "files": [
+    "dist/cjs",
+    "dist/esm",
+    "src"
+  ],
+  "scripts": {
+    "dist": "rm -rf dist && rollup -c",
+    "flow": "flow --quiet",
+    "eslint": "eslint --cache --cache-location 'build/.eslintcache' src/ test/",
+    "test": "npm run flow && npm run eslint && npm run test-coverage",
+    "test-coverage": "jest --all --coverage"
+  },
   "devDependencies": {
-    "@babel/core": "^7.1.5",
-    "@babel/preset-env": "^7.1.5",
+    "@babel/core": "^7.3.4",
+    "@babel/plugin-proposal-class-properties": "^7.3.4",
+    "@babel/preset-env": "^7.3.4",
     "@babel/preset-flow": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
-    "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
-    "babel-jest": "^23.6.0",
-    "enzyme": "^3.7.0",
-    "enzyme-adapter-react-16": "^1.7.0",
-    "enzyme-to-json": "^3.3.4",
-    "eslint": "^5.9.0",
-    "eslint-config-prettier": "^3.3.0",
-    "eslint-plugin-flowtype": "^3.2.0",
-    "eslint-plugin-prettier": "^3.0.0",
-    "eslint-plugin-react": "^7.11.1",
-    "flow-bin": "^0.86.0",
-    "jest": "^23.6.0",
-    "prettier": "^1.15.2",
-    "spy4js": "^2.0.0"
+    "babel-jest": "^24.1.0",
+    "enzyme": "^3.9.0",
+    "enzyme-adapter-react-16": "^1.10.0",
+    "enzyme-to-json": "^3.3.5",
+    "eslint": "^5.14.1",
+    "eslint-config-prettier": "^4.1.0",
+    "eslint-plugin-flowtype": "^3.4.2",
+    "eslint-plugin-prettier": "^3.0.1",
+    "eslint-plugin-react": "^7.12.4",
+    "flow-bin": "^0.94.0",
+    "jest": "^24.1.0",
+    "prettier": "^1.16.4",
+    "react": "^16.8.3",
+    "react-dom": "^16.8.3",
+    "rollup": "^1.4.0",
+    "rollup-plugin-babel": "^4.3.2",
+    "rollup-plugin-flow-entry": "^0.3.1",
+    "serialize-as-code": "^1.0.9",
+    "spy4js": "^2.3.2"
   },
-  "dependencies": {
-    "react": "^16.6.1",
-    "react-dom": "^16.6.1"
+  "peerDependencies": {
+    "react": ">= 16.2.0"
   },
-  "jest": {
-    "setupTestFrameworkScriptFile": "<rootDir>/setupTests.js",
-    "testURL": "https://localhost",
-    "collectCoverageFrom": [
-      "src/**/*.{js}"
-    ],
-    "testMatch": [
-      "<rootDir>/src/**/?(*.)test.js"
-    ],
-    "coverageDirectory": "<rootDir>/build/coverage",
-    "coverageReporters": [
-      "lcov"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "statements": 100,
-        "branches": 100,
-        "functions": 100,
-        "lines": 100
-      }
-    }
-  },
-  "babel": {
-    "presets": [
-      "@babel/preset-env",
-      "@babel/preset-flow",
-      "@babel/preset-react"
-    ]
-  }
+  "dependencies": {}
 }

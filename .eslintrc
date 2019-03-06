@@ -13,6 +13,7 @@
   ],
   "env": {
     "jest": true,
+    "es6": true,
     "browser": true
   },
   "parser": "babel-eslint",
@@ -27,5 +28,12 @@
       "parser": "flow"}],
     "no-unused-vars": 2,
     "flowtype/require-valid-file-annotation": [2, "always"]
+  },
+  "settings": {
+    "react": {
+      "pragma": "React",
+      "version": "16.8.2",
+      "flowVersion": "0.93"
+    }
   }
 }

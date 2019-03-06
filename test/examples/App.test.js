@@ -1,5 +1,6 @@
 // @flow
 
+import '../setupTests-intl'; // this is something you could include into your regular test setup
 import React from 'react';
 import { shallow } from 'enzyme';
 import { App } from './App';

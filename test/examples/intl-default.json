@@ -1,5 +1,6 @@
 {
   "header.logo.alt": "Welcome Logo",
+  "footer.logo.alt": "Save the world Logo",
   "footer.navigation.home": "Home",
   "footer.navigation.settings": "Settings",
   "footer.navigation.info": "Information",
@@ -10,5 +11,5 @@
   "account.submit": "Register now!",
   "account.tac": "Terms and Conditions",
   "account.tac.info": "here",
-  "account.tac.text": "Regsiter for our {tac}.{br}, for more information see {info}.{br}Got more questions?"
+  "account.tac.text": "Register on behalf of our {tac}.{br}, for more information see {info}.{br}Got more questions?"
 }

@@ -3,176 +3,174 @@
 [![styled with prettier][prettier-image]][prettier-url]
 
 # first-intl
-First intl setup you should make.
+First intl setup you should make (for *React*).
 
-The intention of this repository is to give a guideline
-for internationalization setup on modern javascript applications.
+### Introduction
+There are many things you should consider when you setup a frontend
+for production. One of these is **internationalization**. But most of
+the times you might think:
+- Can I add it later without losing resources?
+- What will be the benefits?
+- Will adding that framework add much complexity?
+- Becomes automatic testing even harder?
 
-You should read on if:
-- you are struggeling with the decision which framework to use.
-- you are annoyed by test mocking and the overall complexity overhead
-- you want a stable solution, which prevents your tests from breakage
-- you simply want to start and do not want to lose the opertunity to
-  implement any internationalization framework afterwards
-- you want to better handle errors
-- you want flow typing
+Therefore I want to answer the above questions regarding `first-intl`.
 
-If at least one of the points matched your needs, you should consider
-the idea herein. First of all: By following the instructions you will
-get:
-- Failing tests if your default messages are missing keys or
-  any placeholders were not correctly used
-- Your bundle-size will enlarge at most by **1 kB**
-- Your tests will check your default message, but won't use them to
-  render any translations into your snapshots (or component output)
-- You may apply tracking to prevent missing messages to occur on
-  production system
-- You can switch any internationalization framework as soon as
-  necessary with very low overhead
+1) You should not wait to add `first-intl`. It is easier to extend your
+   translations while developing than adding all those translations afterwards.
 
-## The idea
-The basic concept is the following: You wrap your translations inside
-another function, which handles everything else for you. That simple!
+2) You will benefit from more *readable* and *robust* source **and** test code.
 
-How does it look in your production code? You got somewhere your translations
-inside a [json file](https://github.com/fdc-viktor-luft/first-intl/blob/master/src/intl-default.json)
+3) In comparison to other frameworks `first-intl` will increase the
+   overall complexity very slightly.
+
+4) Your tests wouldn't change at all. But you should consider to
+   add some lines to your test configuration that will make your
+   tests more readable and robust. Since your tests would only rely
+   on message keys instead of whole translations.
+
+### Installation
+##### With yarn
+```
+yarn add first-intl
+```
+##### With npm
+```
+npm install --save first-intl
+```
+
+## Usage
+First let's define some translations inside a [json file](https://github.com/fdc-viktor-luft/first-intl/blob/master/src/intl-default.json)
 like so:
 ```json
 {
   "header.logo.alt": "Welcome Logo",
   "footer.navigation.home": "Home",
-  "footer.navigation.settings": "Settings",
-  "footer.navigation.info": "Information",
-  "footer.navigation.shop": "Shopping",
   "account.back": "Revoke submission",
   "account.remove": "Delete account",
   "account.remove.info": "After deleting your account for {email}, you will be consequently distrusted.",
-  "account.submit": "Register now!"
 }
 ```
-On the other hand you code your [App](https://github.com/fdc-viktor-luft/first-intl/blob/master/src/examples/App.js)
+Then your code for any [component](https://github.com/fdc-viktor-luft/first-intl/blob/master/test/examples/App.js) would look like:
 ```js
-export class App extends React.Component<{}> {
-    render() {
-        return (
-            <div>
-                <header>{__({ id: 'header.logo.alt' }, alt => <img src="/path/to/img" alt={alt} />)}</header>
-                <main>
-                    <button>{__({ id: 'account.remove' })}</button>
-                    {__({ id: 'account.remove.info', values: { email: 'my.example@mail.com' } }, info => <p>{info}</p>)}
-                </main>
-                <footer>
-                    <a href="/path/to/home">{__({ id: 'footer.navigation.home' })}</a>
-                </footer>
-            </div>
-        );
-    }
-}
-```
-Your [snapshot](https://github.com/fdc-viktor-luft/first-intl/blob/master/src/examples/__snapshots__/App.test.js.snap)
-of this app will look like:
-```
-<div>
-  <header>
-    <img
-      alt="__({ id: 'header.logo.alt' })"
-      src="/path/to/img"
-    />
-  </header>
-  <main>
-    <button>
-      __({ id: 'account.remove' })
-    </button>
-    <p>
-      __({ id: 'account.remove.info', values: {"email":"my.example@mail.com"} })
-    </p>
-  </main>
-  <footer>
-    <a
-      href="/path/to/home"
-    >
-      __({ id: 'footer.navigation.home' })
-    </a>
-  </footer>
-</div>
-```
+import { __, addIntlData } from 'first-intl';
+import intlJson from './path/to/intl.json';
 
-## Setup
-Copy the [intl.js](https://github.com/fdc-viktor-luft/first-intl/blob/master/src/intl.js)
-(if you like together with its test) into your src. Modify it to your custom needs.
+// first the required translations
+// usually you would add your base translations inside the index.js
+// but that is up to you
+addIntlData(intlJson);
 
-#### Jest
-Overwrite the behaviour of the intl function for all tests, inside
-your [setupTests.js](https://github.com/fdc-viktor-luft/first-intl/blob/master/setupTests.js)
+// you are ready to go
+export const App = () => (
+    <div>
+        <header>{__('header.logo.alt', alt => <img src="/path/to/img" alt={alt} />)}</header>
+        <main>
+            <button>{__('account.remove')}</button>
+            {__({ id: 'account.remove.info', values: { email: 'my.example@mail.com' } }, info => <p>{info}</p>)}
+        </main>
+        <footer>
+            <a href="/path/to/home">{__('footer.navigation.home')}</a>
+        </footer>
+    </div>
+);
+```
+To render directly strings which is required when you want to insert
+translations inside HTML attributes like "alt" or "placeholder" etc. you
+may also take the following function which basically ensures that you'll
+receive a string.
 ```js
-// make your tests fail immediately on encountered errors
-_Intl.trackOrLog = (str: string) => {
-    throw new Error(str);
-};
+export const Header = () => (
+    <header><img src="/path/to/img" alt={__string('header.logo.alt')} />)</header>
+);
+```
+You can additionally customize some internal behaviour by calling `configure`:
+```js
+import { configure } from 'first-intl';
+
+// this is actually the default tracker
+// you can track those error occurrences at your backend
+// it is absolutely recommended to NOT ignore but fix those errors
+// see further below for more detailed information
+const myTracker = (errorDescription: string): void =>
+                    window.console.error(errorDescription);
+
+// this will replace the whole currently used intl data
+const myIntlData = { 'abort': 'ματαίωση' };
+
+// this will replace the default renderer which will be used if
+// you use "__" without custom renderer 
+const myRenderer: (contents: string | React$Node[]) => React$Node = `<<YOUR_IMPLEMENTATION>>`;
+
+// left keys won't affect your current configuration
+configure({
+    tracker: myTracker,
+    intlData: myIntlData,
+    renderer: myRenderer,
+})
+```
+The last thing to mention for production is the configured tracker.
+By default the dev console will display error occurrences. But you can
+configure whatever tracker you'd like. I recommend to track those occurrences
+to see if any of your users are encountering those errors.
+
+What kind of errors will be tracked?
+- If the provided key does not belong to any message in your current intl data.
+  ('No translation for key: foo.bar')
+- If you've specified values although the message do not use any placeholders.
+  ('Ignoring specified values for: foo.bar')
+- If you've specified more placeholders than necessary.
+  ('Redundant placeholders for: foo.bar')
+- If you've specified to few placeholders.
+  ('Missing placeholder "phone" for: entered.phone')
+
+## Testing
+For testing I recommend to overwrite the behaviour of the intl function for all tests, inside
+your [setupTests.js](https://github.com/fdc-viktor-luft/first-intl/blob/master/test/setupTests-intl.js)
+```js
+import { __internal, configure, type Message } from '../src/intl';
+
+// make your tests fail if they would produce any intl errors
+configure({
+    tracker: (str: string) => {
+        throw new Error(str);
+    },
+});
 // make all validations and render an informative string that does not contain translations
-_Intl.func = (msg: Message, renderFunc?: React$Node => React$Node = s => s): React$Node => {
+const oldRender = __internal.render;
+__internal.render = (msg: Message | string, renderer?: any => any = s => s): any => {
     // make all the validations
-    _Intl.internal(msg, renderFunc);
-    // return rendered message without translated content (for stable test snapshots)
-    return renderFunc(`__({ id: '${msg.id}'${msg.values ? ', values: ' + JSON.stringify(msg.values) : ''} })`);
+    oldRender(msg, renderer);
+    // return rendered message without translated content (for stable test snapshots and assertions)
+    // you may use other serializers than "JSON.stringify" but for the start it is sufficient
+    return renderer(
+        typeof msg === 'string'
+            ? `__('${msg}')`
+            : `__({ id: '${msg.id}'${msg.values ? ', values: ' + JSON.stringify(msg.values) : ''} })`
+    );
 };
 ```
 
-#### Without React
-Just modify return types of the intl func and provide another default
-renderer.
+## Comparisons (Pro/Con)
+The made comparison is related to `react-intl`. You'll benefit from more
+development comfort and do not have to adjust your testing behaviour dramatically.
+You can access even translations as strings easily. You are flexible in adding
+new translations dynamically and are able to override existing translations
+in favor to some switched language. It seems almost perfect to consider
+`first-intl` **BUT** you are not anymore able to switch all messages without
+losing internal state of your React tree. This is the single most important aspect
+why `react-intl` and other alike frameworks are that complex. To switch all messages
+with `first-intl` and let your current UI take effect, you'd possibly need to change
+a "key" property at your highest component in the tree that contains all translations.
+This will destroy your current internal state and let's React rerender everything.
 
-## Rules
-It is **very important** to differentiate between the message business value
-and its translation. To enforce this, the intl func returns a
-`React$Node` instead of a simple `string`. Also I defined the type
-`Message` for the busines value. The business value should be used as
-long as possible. It holds all relevant information to call the intl
-func and render the translation. The translation should be done only
-if you want to display it. There is no need to make any of your translations
-inside a validator or store them inside your redux store or whatever else.
+But I never had that requirement. It was always fine to lose your current state if the user
+switches the desired language. Most sites even deliver statically different content with even different
+URLs for different languages.
 
-This is the key aspect, why it will be no pain to migrate any other
-full internationalization framework, e.g.
-[react-intl](https://github.com/yahoo/react-intl) or
-[i18next](https://www.i18next.com) especially for react
-[react-i18next](https://github.com/i18next/react-i18next).
-
-## Migrate to full intl
-You should migrate to a full internationalization framework as soon as
-you have to compute translations for more than one language.
-To migrate you only need to modify the intl func in the following way.
-Before:
-```js
-const internal = (msg: Message, renderFunc?: React$Node => React$Node = defaultRenderFunc): React$Node => {
-    (...)
-    return renderFunc(result);
-```
-After (`react-intl`):
-```js
-import { FormattedMessage } from 'react-intl';
-
-const internal = (msg: Message, renderFunc?: React$Node => React$Node = defaultRenderFunc): React$Node => {
-    (...) // all validations will still be made, but FormattedMessage takes care to translate and update
-    return <FormattedMessage {...msg}>{renderFunc}</FormattedMessage>;
-```
-After (`react-i18next`):
-```js
-import { Trans } from 'react-i18next';
-
-const internal = (msg: Message, renderFunc: void => React$Node): React$Node => {
-    (...) // all validations will still be made, but FormattedMessage takes care to translate and update
-    return <Trans i18nKey={msg.id}>{renderFunc()}</Trans>;
-```
-For `react-i18next` there are mulitple other solutions. You might want to use `I18n`-Tag instead.
-For more information see into their [documentaion](https://react.i18next.com).
-
-## Future
-- I will possibly provide a method to wrap multiple translations into a single render func.
-- If I find a more convinient and general solution with the possibility for good configuration **and**
-  very small bundle size, I might add an extra npm package.
-- I might add more complete documentation for migrating to different intl frameworks.
-- Better serialization for tests will be added
+`first-intl` being that minimalistic also misses functionality to translate e.g. dates
+for the end user. You'd have to implement your own or install further packages to handle
+this for you.
 
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg
 [license-url]: https://github.com/fdc-viktor-luft/first-intl/blob/master/LICENSE
