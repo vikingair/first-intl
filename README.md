@@ -128,13 +128,15 @@ What kind of errors will be tracked?
 For testing I recommend to overwrite the behaviour of the intl function for all tests, inside
 your [setupTests.js](https://github.com/fdc-viktor-luft/first-intl/blob/master/test/setupTests-intl.js)
 ```js
-import { __internal, configure, type Message } from '../src/intl';
+import intlData from './your/intl-data.json';
+import { __internal, configure, type Message } from 'first-intl';
 
 // make your tests fail if they would produce any intl errors
 configure({
     tracker: (str: string) => {
         throw new Error(str);
     },
+    intlData,
 });
 // make all validations and render an informative string that does not contain translations
 const oldRender = __internal.render;
