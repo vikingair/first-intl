@@ -2,9 +2,12 @@
 
 import React, { Fragment } from 'react';
 
-export type TypedMessage<T> = { id: string, values?: { [string]: T } };
-export type StringMessage = TypedMessage<string | number>;
-export type Message = TypedMessage<React$Node>;
+export type TypedMessageObj<T> = { id: string, values?: { [string]: T } };
+export type StringMessageObj = TypedMessageObj<string | number>;
+export type StringMessage = StringMessageObj | string;
+export type MessageObj = TypedMessageObj<React$Node>;
+export type Message = MessageObj | string;
+
 type Contents = string | React$Node[];
 type Renderer<T> = (contents: Contents) => T;
 type ReactRenderer = Renderer<React$Node>;
@@ -41,7 +44,7 @@ export const configure = (config: $Shape<Config>): void =>
         CONFIG[key] = config[key];
     });
 
-const destructure = (raw: string, msg: Message): Contents => {
+const destructure = (raw: string, msg: MessageObj): Contents => {
     const { id, values } = msg;
 
     const matches = raw.match(/{[a-z]+}/gi);
@@ -82,7 +85,7 @@ const destructure = (raw: string, msg: Message): Contents => {
     return result;
 };
 
-const render = <T>(msg: Message | string, renderer: Renderer<T>): T => {
+const render = <T>(msg: Message, renderer: Renderer<T>): T => {
     const m = typeof msg === 'string' ? { id: msg } : msg;
     const raw = CONFIG.intlData[m.id];
     if (!raw) {
@@ -94,8 +97,8 @@ const render = <T>(msg: Message | string, renderer: Renderer<T>): T => {
 
 export const __internal = { render };
 
-export const __ = (msg: Message | string, renderer?: ReactRenderer = CONFIG.renderer): React$Node =>
+export const __ = (msg: Message, renderer?: ReactRenderer = CONFIG.renderer): React$Node =>
     __internal.render<React$Node>(msg, renderer);
 
-export const __string = (msg: StringMessage | string, renderer?: Renderer<string> = stringRenderer): string =>
+export const __string = (msg: StringMessage, renderer?: Renderer<string> = stringRenderer): string =>
     __internal.render<string>(msg, renderer);

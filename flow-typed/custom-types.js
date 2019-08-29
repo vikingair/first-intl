@@ -1,7 +1,10 @@
 // @flow
 
 // some other types (required to flow type the tests)
-declare function expect(arg: any): any;
+declare var expect: {
+    (arg: any): any,
+    addSnapshotSerializer: any,
+};
 declare function describe(msg: string, func: Function): void;
 declare function it(msg: string, func: Function): void;
 declare function afterEach(func: Function): void;
