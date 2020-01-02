@@ -31,12 +31,12 @@ type Tracker = (description: string) => void;
 type Config = {| tracker: Tracker, intlData: IntlData, renderer: ReactRenderer |};
 const CONFIG: Config = {
     tracker: s => window.console.error(s),
-    intlData: ({}: Object),
+    intlData: ({}: { [string]: string }),
     renderer: defaultRenderer,
 };
 
 export const addIntlData = (data: { [string]: string }) => {
-    CONFIG.intlData = { ...CONFIG.intlData, ...data };
+    CONFIG.intlData = { ...CONFIG.intlData, ...(data: any) };
 };
 
 export const configure = (config: $Shape<Config>): void =>
@@ -97,8 +97,8 @@ const render = <T>(msg: Message, renderer: Renderer<T>): T => {
 
 export const __internal = { render };
 
-export const __ = (msg: Message, renderer?: ReactRenderer = CONFIG.renderer): React$Node =>
+export const __ = (msg: Message, renderer: ReactRenderer = CONFIG.renderer): React$Node =>
     __internal.render<React$Node>(msg, renderer);
 
-export const __string = (msg: StringMessage, renderer?: Renderer<string> = stringRenderer): string =>
+export const __string = (msg: StringMessage, renderer: Renderer<string> = stringRenderer): string =>
     __internal.render<string>(msg, renderer);
