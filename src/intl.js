@@ -12,7 +12,7 @@ type Contents = string | React$Node[];
 type Renderer<T> = (contents: Contents) => T;
 type ReactRenderer = Renderer<React$Node>;
 
-const defaultRenderer: ReactRenderer = contents =>
+const defaultRenderer: ReactRenderer = (contents) =>
     typeof contents === 'string' ? (
         contents
     ) : (
@@ -23,14 +23,14 @@ const defaultRenderer: ReactRenderer = contents =>
         </Fragment>
     );
 
-const stringRenderer: Renderer<string> = contents =>
+const stringRenderer: Renderer<string> = (contents) =>
     typeof contents === 'string' ? contents : contents.map(String).join('');
 
 type IntlData = { [string]: string };
 type Tracker = (description: string) => void;
 type Config = {| tracker: Tracker, intlData: IntlData, renderer: ReactRenderer |};
 const CONFIG: Config = {
-    tracker: s => window.console.error(s),
+    tracker: (s) => window.console.error(s),
     intlData: ({}: { [string]: string }),
     renderer: defaultRenderer,
 };
@@ -57,7 +57,7 @@ const destructure = (raw: string, msg: MessageObj): Contents => {
     const result = [];
     const used = [];
     const phValues = values || {};
-    matches.forEach(ph => {
+    matches.forEach((ph) => {
         const phIndex = toProcess.indexOf(ph);
         const key = ph.slice(1, -1);
         const value = phValues[key];
@@ -78,7 +78,7 @@ const destructure = (raw: string, msg: MessageObj): Contents => {
         CONFIG.tracker('Redundant placeholders for: ' + id);
     }
 
-    if (result.every(v => typeof v === 'number' || typeof v === 'string')) {
+    if (result.every((v) => typeof v === 'number' || typeof v === 'string')) {
         return result.join('');
     }
 

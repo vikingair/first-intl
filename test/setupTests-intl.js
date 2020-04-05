@@ -11,7 +11,7 @@ configure({
 });
 // make all validations and render an informative string that does not contain translations
 const oldRender = __internal.render;
-__internal.render = (msg: Message | string, renderer?: any => any = s => s): any => {
+__internal.render = (msg: Message | string, renderer?: (any) => any = (s) => s): any => {
     // make all the validations
     oldRender(msg, renderer);
     // return rendered message without translated content (for stable test snapshots)

@@ -9,13 +9,13 @@ addIntlData(intlData);
 export const App = () => (
     <div>
         <header>
-            {__('header.logo.alt', alt => (
+            {__('header.logo.alt', (alt) => (
                 <img src="/path/to/img" alt={alt} />
             ))}
         </header>
         <main>
             <button>{__('account.remove')}</button>
-            {__({ id: 'account.remove.info', values: { email: 'my.example@mail.com' } }, info => (
+            {__({ id: 'account.remove.info', values: { email: 'my.example@mail.com' } }, (info) => (
                 <p>{info}</p>
             ))}
             {__({
