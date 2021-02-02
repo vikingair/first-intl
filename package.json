@@ -34,7 +34,7 @@
     "dist": "rm -rf dist && rollup -c",
     "flow": "flow --quiet",
     "eslint": "eslint --cache --cache-location 'build/.eslintcache' src/ test/",
-    "test": "yarn run flow && yarn run eslint && yarn run test-coverage",
+    "test": "pnpm flow && pnpm eslint && pnpm test-coverage",
     "test-coverage": "jest --all --coverage"
   },
   "devDependencies": {
