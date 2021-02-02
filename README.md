@@ -177,6 +177,6 @@ this for you.
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg
 [license-url]: https://github.com/fdc-viktor-luft/first-intl/blob/master/LICENSE
 [build-image]: https://img.shields.io/travis/fdc-viktor-luft/first-intl/master.svg?style=flat-square
-[build-url]: https://travis-ci.org/fdc-viktor-luft/first-intl
+[build-url]: https://travis-ci.com/fdc-viktor-luft/first-intl
 [prettier-image]: https://img.shields.io/badge/styled_with-prettier-ff69b4.svg
 [prettier-url]: https://github.com/prettier/prettier
