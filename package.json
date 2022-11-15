@@ -1,6 +1,6 @@
 {
   "name": "first-intl",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "First intl setup for react",
   "keywords": [
     "intl",
@@ -22,50 +22,43 @@
   "bugs": {
     "url": "https://github.com/fdc-viktor-luft/first-intl/issues"
   },
-  "main": "dist/cjs/intl.js",
-  "module": "dist/esm/intl.js",
-  "types": "src/intl.d.ts",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
   "files": [
-    "dist/cjs",
-    "dist/esm",
-    "src"
+    "dist"
   ],
   "scripts": {
-    "dist": "rm -rf dist && rollup -c",
-    "flow": "flow --quiet",
-    "eslint": "eslint --cache --cache-location 'build/.eslintcache' src/ test/",
-    "test": "pnpm flow && pnpm eslint && pnpm test-coverage",
-    "test-coverage": "jest --all --coverage"
+    "dist": "vite build && tsc -p tsconfig.publish.json",
+    "lint": "pnpm lint:es && pnpm lint:ts",
+    "lint:es": "eslint --ext .ts,.tsx src/ tests/ --max-warnings 0",
+    "lint:ts": "tsc",
+    "test": "vitest --coverage"
   },
   "devDependencies": {
-    "@babel/core": "^7.9.0",
-    "@babel/plugin-proposal-class-properties": "^7.8.3",
-    "@babel/preset-env": "^7.9.0",
-    "@babel/preset-flow": "^7.9.0",
-    "@babel/preset-react": "^7.9.4",
-    "babel-eslint": "^10.1.0",
-    "babel-jest": "^25.2.6",
-    "enzyme": "^3.11.0",
-    "enzyme-adapter-react-16": "^1.15.2",
-    "enzyme-to-json": "^3.4.4",
-    "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.10.1",
-    "eslint-plugin-flowtype": "^4.7.0",
-    "eslint-plugin-prettier": "^3.1.2",
-    "eslint-plugin-react": "^7.19.0",
-    "flow-bin": "^0.122.0",
-    "jest": "^25.2.7",
-    "prettier": "^2.0.2",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "rollup": "^2.3.3",
-    "rollup-plugin-babel": "^4.4.0",
-    "rollup-plugin-flow-entry": "^0.3.4",
-    "serialize-as-code": "^1.3.1",
-    "spy4js": "^2.11.0"
+    "@testing-library/react": "^13.4.0",
+    "@types/react": "^18.0.25",
+    "@types/react-dom": "^18.0.9",
+    "@typescript-eslint/eslint-plugin": "^5.43.0",
+    "@typescript-eslint/parser": "^5.43.0",
+    "@vitest/coverage-c8": "^0.25.2",
+    "eslint": "8.27.0",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-plugin-import": "2.26.0",
+    "eslint-plugin-prettier": "4.2.1",
+    "eslint-plugin-react": "7.31.10",
+    "eslint-plugin-react-hooks": "4.6.0",
+    "jsdom": "^20.0.2",
+    "prettier": "^2.7.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "serialize-as-code": "^2.0.2",
+    "spy4js": "^3.4.1",
+    "typescript": "^4.8.4",
+    "vite": "^3.2.3",
+    "vitest": "^0.25.2"
   },
   "peerDependencies": {
-    "react": "^16.2.0"
-  },
-  "dependencies": {}
+    "react": ">= 16.2.0"
+  }
 }

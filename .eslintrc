@@ -1,39 +1,41 @@
 {
   "extends": [
     "eslint:recommended",
-    "prettier",
-    "prettier/flowtype",
-    "plugin:flowtype/recommended",
     "plugin:react/recommended",
-    "prettier/react"
+    "plugin:react-hooks/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
   ],
-  "plugins": [
-    "prettier",
-    "flowtype"
-  ],
+  "plugins": ["prettier", "@typescript-eslint"],
   "env": {
     "jest": true,
+    "browser": true,
     "es6": true,
-    "browser": true
+    "node": true
   },
-  "parser": "babel-eslint",
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
   "rules": {
-    "prettier/prettier": ["error", {
-      "useTabs": false,
-      "printWidth": 120,
-      "tabWidth": 4,
-      "singleQuote": true,
-      "trailingComma": "es5",
-      "jsxBracketSameLine": true,
-      "parser": "flow"}],
-    "no-unused-vars": 2,
-    "flowtype/require-valid-file-annotation": [2, "always"]
+    "prettier/prettier": "warn",
+    "arrow-body-style": ["warn", "as-needed"],
+    "no-duplicate-imports": "warn",
+    "no-console": "warn"
   },
   "settings": {
     "react": {
-      "pragma": "React",
-      "version": "16.8.2",
-      "flowVersion": "0.93"
+      "version": "detect"
     }
-  }
+  },
+  "overrides": [{
+    "files": ["tests/**"],
+    "rules": {
+      "@typescript-eslint/no-explicit-any": "off"
+    }
+  }]
 }

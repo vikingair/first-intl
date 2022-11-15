@@ -1,6 +1,5 @@
-// @flow
 // make your tests fail immediately on encountered errors
-import { __internal, configure, type Message } from '../src/intl';
+import { __internal, configure, type Message } from '../src';
 import { Serializer } from 'serialize-as-code';
 
 // make your tests fail if they would produce any intl errors
@@ -11,7 +10,7 @@ configure({
 });
 // make all validations and render an informative string that does not contain translations
 const oldRender = __internal.render;
-__internal.render = (msg: Message | string, renderer?: (any) => any = (s) => s): any => {
+__internal.render = (msg: Message | string, renderer: (arg: any) => any = (s) => s): any => {
     // make all the validations
     oldRender(msg, renderer);
     // return rendered message without translated content (for stable test snapshots)

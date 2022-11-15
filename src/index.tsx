@@ -1,16 +1,17 @@
-// @flow
-
 import React, { Fragment } from 'react';
 
-export type TypedMessageObj<T> = { id: string, values?: { [string]: T } };
+export type TypedMessageObj<T> = { id: string; values?: { [key: string]: T } };
 export type StringMessageObj = TypedMessageObj<string | number>;
 export type StringMessage = StringMessageObj | string;
-export type MessageObj = TypedMessageObj<React$Node>;
+export type MessageObj = TypedMessageObj<React.ReactNode>;
 export type Message = MessageObj | string;
 
-type Contents = string | React$Node[];
+type Contents = string | React.ReactNode[];
 type Renderer<T> = (contents: Contents) => T;
-type ReactRenderer = Renderer<React$Node>;
+type ReactRenderer = Renderer<React.ReactNode>;
+type IntlData = { [messageKey: string]: string };
+type Tracker = (description: string) => void;
+type Config = { tracker: Tracker; intlData: IntlData; renderer: ReactRenderer };
 
 const defaultRenderer: ReactRenderer = (contents) =>
     typeof contents === 'string' ? (
@@ -26,22 +27,20 @@ const defaultRenderer: ReactRenderer = (contents) =>
 const stringRenderer: Renderer<string> = (contents) =>
     typeof contents === 'string' ? contents : contents.map(String).join('');
 
-type IntlData = { [string]: string };
-type Tracker = (description: string) => void;
-type Config = {| tracker: Tracker, intlData: IntlData, renderer: ReactRenderer |};
 const CONFIG: Config = {
     tracker: (s) => window.console.error(s),
-    intlData: ({}: { [string]: string }),
+    intlData: {},
     renderer: defaultRenderer,
 };
 
-export const addIntlData = (data: { [string]: string }) => {
-    CONFIG.intlData = { ...CONFIG.intlData, ...(data: any) };
+export const addIntlData = (data: IntlData) => {
+    CONFIG.intlData = { ...CONFIG.intlData, ...data };
 };
 
-export const configure = (config: $Shape<Config>): void =>
+export const configure = (config: Partial<Config>): void =>
     Object.keys(config).forEach((key: string) => {
-        CONFIG[key] = config[key];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (CONFIG as any)[key] = config[key as keyof Config];
     });
 
 const destructure = (raw: string, msg: MessageObj): Contents => {
@@ -55,7 +54,7 @@ const destructure = (raw: string, msg: MessageObj): Contents => {
 
     let toProcess = raw;
     const result = [];
-    const used = [];
+    const used: string[] = [];
     const phValues = values || {};
     matches.forEach((ph) => {
         const phIndex = toProcess.indexOf(ph);
@@ -85,7 +84,7 @@ const destructure = (raw: string, msg: MessageObj): Contents => {
     return result;
 };
 
-const render = <T>(msg: Message, renderer: Renderer<T>): T => {
+const render = <T,>(msg: Message, renderer: Renderer<T>): T => {
     const m = typeof msg === 'string' ? { id: msg } : msg;
     const raw = CONFIG.intlData[m.id];
     if (!raw) {
@@ -97,8 +96,8 @@ const render = <T>(msg: Message, renderer: Renderer<T>): T => {
 
 export const __internal = { render };
 
-export const __ = (msg: Message, renderer: ReactRenderer = CONFIG.renderer): React$Node =>
-    __internal.render<React$Node>(msg, renderer);
+export const __ = (msg: Message, renderer: ReactRenderer = CONFIG.renderer): React.ReactNode =>
+    __internal.render<React.ReactNode>(msg, renderer);
 
 export const __string = (msg: StringMessage, renderer: Renderer<string> = stringRenderer): string =>
     __internal.render<string>(msg, renderer);
