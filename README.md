@@ -1,20 +1,21 @@
 [![GitHub license][license-image]][license-url]
 [![Travis][build-image]][build-url]
-[![styled with prettier][prettier-image]][prettier-url]
+[![GitHub Push][push-image]][push-url]
+[![Coverage Status][coveralls-image]][coveralls-url]
 
 # first-intl
 First intl setup you should make (for *React*).
 
 ### Introduction
-There are many things you should consider when you setup a frontend
-for production. One of these is **internationalization**. But most of
-the times you might think:
+There are many things you should consider when you set up a frontend
+for production. One of these is **internationalization**. But, most of
+the cases you might think:
 - Can I add it later without losing resources?
 - What will be the benefits?
 - Will adding that framework add much complexity?
 - Becomes automatic testing even harder?
 
-Therefore I want to answer the above questions regarding `first-intl`.
+Therefore, I want to answer the above questions regarding `first-intl`.
 
 1) You should not wait to add `first-intl`. It is easier to extend your
    translations while developing than adding all those translations afterwards.
@@ -30,6 +31,10 @@ Therefore I want to answer the above questions regarding `first-intl`.
    on message keys instead of whole translations.
 
 ### Installation
+##### With pnpm
+```
+pnpm add first-intl
+```
 ##### With yarn
 ```
 yarn add first-intl
@@ -51,8 +56,8 @@ like so:
   "account.remove.info": "After deleting your account for {email}, you will be consequently distrusted.",
 }
 ```
-Then your code for any [component](https://github.com/fdc-viktor-luft/first-intl/blob/master/test/examples/App.js) would look like:
-```js
+Then your code for any [component](https://github.com/fdc-viktor-luft/first-intl/blob/master/tests/examples/App.tsx) would look like:
+```tsx
 import { __, addIntlData } from 'first-intl';
 import intlJson from './path/to/intl.json';
 
@@ -64,7 +69,7 @@ addIntlData(intlJson);
 // you are ready to go
 export const App = () => (
     <div>
-        <header>{__('header.logo.alt', alt => <img src="/path/to/img" alt={alt} />)}</header>
+        <header><img src="/path/to/img" alt={__string('header.logo.alt')} /></header>
         <main>
             <button>{__('account.remove')}</button>
             {__({ id: 'account.remove.info', values: { email: 'my.example@mail.com' } }, info => <p>{info}</p>)}
@@ -79,13 +84,13 @@ To render directly strings which is required when you want to insert
 translations inside HTML attributes like "alt" or "placeholder" etc. you
 may also take the following function which basically ensures that you'll
 receive a string.
-```js
+```tsx
 export const Header = () => (
     <header><img src="/path/to/img" alt={__string('header.logo.alt')} />)</header>
 );
 ```
 You can additionally customize some internal behaviour by calling `configure`:
-```js
+```tsx
 import { configure } from 'first-intl';
 
 // this is actually the default tracker
@@ -100,7 +105,7 @@ const myIntlData = { 'abort': 'ματαίωση' };
 
 // this will replace the default renderer which will be used if
 // you use "__" without custom renderer 
-const myRenderer: (contents: string | React$Node[]) => React$Node = `<<YOUR_IMPLEMENTATION>>`;
+const myRenderer: (contents: string | React.ReactNode[]) => React.ReactNode = `<<YOUR_IMPLEMENTATION>>`;
 
 // left keys won't affect your current configuration
 configure({
@@ -125,8 +130,8 @@ What kind of errors will be tracked?
   ('Missing placeholder "phone" for: entered.phone')
 
 ## Testing
-For testing I recommend to overwrite the behaviour of the intl function for all tests, inside
-your [setupTests.js](https://github.com/fdc-viktor-luft/first-intl/blob/master/test/setupTests-intl.js)
+For testing, I recommend to overwrite the behaviour of the intl function for all tests, inside
+your [setupTests.js](https://github.com/fdc-viktor-luft/first-intl/blob/master/tests/setupTests-intl.ts)
 ```js
 import intlData from './your/intl-data.json';
 import { __internal, configure, type Message } from 'first-intl';
@@ -140,7 +145,7 @@ configure({
 });
 // make all validations and render an informative string that does not contain translations
 const oldRender = __internal.render;
-__internal.render = (msg: Message | string, renderer?: any => any = s => s): any => {
+__internal.render = (msg: Message | string, renderer: (arg: any) => any = (s) => s): any => {
     // make all the validations
     oldRender(msg, renderer);
     // return rendered message without translated content (for stable test snapshots and assertions)
@@ -176,7 +181,7 @@ this for you.
 
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg
 [license-url]: https://github.com/fdc-viktor-luft/first-intl/blob/master/LICENSE
-[build-image]: https://img.shields.io/travis/fdc-viktor-luft/first-intl/master.svg?style=flat-square
-[build-url]: https://travis-ci.com/fdc-viktor-luft/first-intl
-[prettier-image]: https://img.shields.io/badge/styled_with-prettier-ff69b4.svg
-[prettier-url]: https://github.com/prettier/prettier
+[push-image]: https://github.com/fdc-viktor-luft/first-intl/actions/workflows/push.yml/badge.svg
+[push-url]: https://github.com/fdc-viktor-luft/first-intl/actions/workflows/push.yml
+[coveralls-image]: https://coveralls.io/repos/github/fdc-viktor-luft/first-intl/badge.svg?branch=master
+[coveralls-url]: https://coveralls.io/github/fdc-viktor-luft/first-intl?branch=master

@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1
 
-exports[`App renders the App without translations, but all necessary information 1`] = `
+exports[`App > renders the App without translations, but all necessary information 1`] = `
 <div>
   <header>
     <img

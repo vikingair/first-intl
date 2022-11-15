@@ -1,8 +1,7 @@
-// @flow
-
 import React, { Fragment } from 'react';
+import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { Spy } from 'spy4js';
-import { __, __string, addIntlData, configure } from '../src/intl';
+import { __, __string, addIntlData, configure } from '../src';
 
 addIntlData({
     'test.key.1': 'Some message',
@@ -16,7 +15,7 @@ describe('Default Tracker', () => {
         window.console.error = oldConsoleError;
     });
     it('logs an error', () => {
-        const logSpy = new Spy('console.error');
+        const logSpy = Spy('console.error');
         window.console.error = logSpy;
         expect(__({ id: 'foo' })).toEqual('foo');
         logSpy.hasCallHistory('No translation for key: foo');
@@ -24,7 +23,8 @@ describe('Default Tracker', () => {
 });
 
 describe('Internationalization - Tool', () => {
-    const tracker = new Spy('tracker');
+    const tracker = Spy('tracker');
+
     beforeAll(() => {
         configure({ tracker });
     });
@@ -119,7 +119,7 @@ describe('Internationalization - Tool', () => {
         expect(__string({ id: 'test.key.2', values: { test: 1337, custom: 'my' } })).toBe(
             'My 1337 message with my placeholders.'
         );
-        expect(__string({ id: 'test.key.2', values: { test: (<strong>nice</strong>: any), custom: 'my' } })).toBe(
+        expect(__string({ id: 'test.key.2', values: { test: (<strong>nice</strong>) as any, custom: 'my' } })).toBe(
             'My [object Object] message with my placeholders.'
         );
         tracker.wasNotCalled();

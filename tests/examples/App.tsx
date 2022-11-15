@@ -1,7 +1,5 @@
-// @flow
-
 import React from 'react';
-import { __, __string, addIntlData } from '../../src/intl';
+import { __, __string, addIntlData } from '../../src';
 import intlData from './intl-default.json';
 
 addIntlData(intlData);
@@ -9,9 +7,7 @@ addIntlData(intlData);
 export const App = () => (
     <div>
         <header>
-            {__('header.logo.alt', (alt) => (
-                <img src="/path/to/img" alt={alt} />
-            ))}
+            <img src="/path/to/img" alt={__string('header.logo.alt')} />
         </header>
         <main>
             <button>{__('account.remove')}</button>
