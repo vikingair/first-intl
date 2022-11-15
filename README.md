@@ -1,5 +1,4 @@
 [![GitHub license][license-image]][license-url]
-[![Travis][build-image]][build-url]
 [![GitHub Push][push-image]][push-url]
 [![Coverage Status][coveralls-image]][coveralls-url]
 
